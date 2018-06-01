@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import os
+import time
 
 
 def init_driver():
@@ -20,12 +21,6 @@ def lookup(driver):
             (By.CLASS_NAME, "QuestionHeader-title")))
         button = driver.wait.until(EC.element_to_be_clickable(
             (By.CSS_SELECTOR, ".Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel")))
-        button.click()
-
-
-        # buttons = driver.find_elements_by_css_selector(".Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel")
-        # for button in buttons:
-        #     button.click()
     except TimeoutException:
         print("Box or Button not found in google.com")
 
@@ -33,5 +28,5 @@ def lookup(driver):
 if __name__ == "__main__":
     driver = init_driver()
     lookup(driver)
-    # time.sleep(5)
-    # driver.quit()
+    time.sleep(5)
+    driver.quit()
