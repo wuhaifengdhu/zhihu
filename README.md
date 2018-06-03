@@ -1,7 +1,11 @@
 ### Requirements
 1, Install python 2.7+.                   
-2, Install libs: zhihu_oauth, redis, pandas           
-Example: pip install zhihu_oauth
+2, Install libs: zhihu_oauth, redis, pandas, csv          
+Example: ```pip install zhihu_oauth```
+
+
+### Running
+```python main.py```
 
 
 
