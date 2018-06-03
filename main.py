@@ -1,32 +1,49 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-import os
+import sys
 import time
+from random import randint
+
+from zhihu_oauth import UnexpectedResponseException
+
+from lib.client.Client import client
+from lib.model.User import User
+from multiprocessing import Process
+from lib.db.RedisQueue import redisQueue
+from lib.db.RedisHelper import redisHelper
 
 
-def init_driver():
-    os.environ["PATH"] += os.pathsep + os.path.join(os.getcwd(), "chrome_driver")
-    driver = webdriver.Chrome()
-    driver.wait = WebDriverWait(driver, 5)
-    return driver
+reload(sys)
+sys.setdefaultencoding('UTF8')
+
+total_process = 0
 
 
-def lookup(driver):
-    driver.get("https://www.zhihu.com/question/34672778")
+redisHelper.clean_all()
+
+
+def crawl_user_by_id(user_id):
+    print("=" * 100)
+    print("Crawl on user id %s" % user_id)
+    people = client.people(user_id)
+    User(people)
+
+
+def crawl_task():
+    crawl_user_by_id(redisQueue.get())
+
+
+crawl_start_user_list = ["wu-hai-feng-70", "zhang-jia-wei"]
+for user_id in crawl_start_user_list:
     try:
-        driver.wait.until(EC.presence_of_element_located(
-            (By.CLASS_NAME, "QuestionHeader-title")))
-        button = driver.wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel")))
-    except TimeoutException:
-        print("Box or Button not found in google.com")
+        crawl_user_by_id(user_id)
+    except UnexpectedResponseException as ex:
+        print("Exception happen when crawl on %s" % user_id)
 
-
-if __name__ == "__main__":
-    driver = init_driver()
-    lookup(driver)
-    time.sleep(5)
-    driver.quit()
+print(redisQueue.qsize())
+while not redisQueue.empty():
+    process = Process(target=crawl_task)
+    # process.daemon = True
+    process.start()
+    process.join()
+    print("start to sleep!")
+    time.sleep(randint(0, 7))
+    print("after sleep!")
