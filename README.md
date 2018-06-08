@@ -9,7 +9,7 @@ Example: ```pip install zhihu_oauth```
 
 
 
-### Crawl Data
+### Crawl Data Format
 用户id、    
 该用户的回答时间list、      
 发表的文章时间list、        
