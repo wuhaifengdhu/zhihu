@@ -22,6 +22,11 @@ class Question(object):
 
     @staticmethod
     def handle_comments(comments):
+        collect_people_set = set()
         for comment in comments:
             redisHelper.update_comments(comment.author.id, comment.created_time)
-            redisHelper.collect_crawl_people(comment.author.id)
+            if len(collect_people_set) < 10:
+                collect_people_set.add(comment.author.id)
+                break
+        for user_id in collect_people_set:
+            redisHelper.collect_crawl_people(user_id)

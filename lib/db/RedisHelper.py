@@ -12,14 +12,16 @@ class RedisHelper(object):
         self.comment_prefix = "C"
 
     def save_user(self, user):
-        self.redis.set(self.user_prefix + user.get_user_id(), pickle.dumps(user))
+        self.redis.set(self.user_prefix + user.user_id, pickle.dumps(user))
 
     def get_user(self, user_id):
         user = self.redis.get(self.user_prefix + user_id)
         return pickle.loads(user)
 
-    def export_all_user(self):
-        pass
+    def export_all_users(self):
+        for key in self.redis.scan_iter(self.user_prefix + "*"):
+            user = pickle.loads(self.redis.get(key))
+            print(user)
 
     def is_user_exist(self, user_id):
         return self.redis.get(self.user_prefix + user_id) is not None
@@ -46,7 +48,7 @@ class RedisHelper(object):
 
     def collect_crawl_people(self, user_id):
         if not self.is_user_exist(user_id):
-            print("add user id %s into queue for crawl next" % user_id)
+            print("add user id %s into queue for crawl next, redisQueue Size %d" % (user_id, redisQueue.qsize()))
             redisQueue.put(user_id)
 
     def get_next_people(self):

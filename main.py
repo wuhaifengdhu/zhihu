@@ -17,33 +17,40 @@ sys.setdefaultencoding('UTF8')
 total_process = 0
 
 
-redisHelper.clean_all()
+# This function is used to init the database, do not need to run every start time
+def run_on_the_first_time():
+    crawl_start_user_list = ["wu-hai-feng-70", "zhang-jia-wei"]
+    for user_id in crawl_start_user_list:
+        crawl_user_by_id(user_id)
+    print("Prepare finished, start with queue size %d" % redisQueue.qsize())
+
+# redisHelper.clean_all()
+# run_on_the_first_time
 
 
 def crawl_user_by_id(user_id):
     print("=" * 100)
     print("Crawl on user id %s" % user_id)
-    people = client.people(user_id)
-    User(people)
-
-
-def crawl_task():
-    crawl_user_by_id(redisQueue.get())
-
-
-crawl_start_user_list = ["wu-hai-feng-70", "zhang-jia-wei"]
-for user_id in crawl_start_user_list:
     try:
-        crawl_user_by_id(user_id)
+        people = client.people(user_id)
+        user = User(people)
+        redisHelper.save_user(user)
     except UnexpectedResponseException as ex:
         print("Exception happen when crawl on %s" % user_id)
 
-print(redisQueue.qsize())
+
+def crawl_task():
+    print("Start Crawl Task")
+    user_id = redisQueue.get()
+    print("Get user id %s" % user_id)
+    crawl_user_by_id(user_id)
+
+
+print("Starting crawl process with queue size %d" % redisQueue.qsize())
 while not redisQueue.empty():
+    print("start new process!")
     process = Process(target=crawl_task)
-    # process.daemon = True
+    process.daemon = True
     process.start()
     process.join()
-    print("start to sleep!")
-    time.sleep(randint(0, 7))
-    print("after sleep!")
+
