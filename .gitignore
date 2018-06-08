@@ -1,4 +1,0 @@
-chrome_driver/chromedriver*
-.idea
-venv
-*.log
