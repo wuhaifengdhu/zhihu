@@ -46,9 +46,9 @@ class ZhihuCrawler(object):
             self.__process_queue.add_job(process)
 
     # This function is used to init the database, do not need to run every start time
-    def __initialize(self):
+    def initialize(self):
         # Clean all data in data base
-        redisHelper.clean_all()
+        # redisHelper.clean_all()
         # Start crawl from two provided users
         crawl_start_user_list = ["wu-hai-feng-70", "zhang-jia-wei"]
         for user_id in crawl_start_user_list:
@@ -72,4 +72,5 @@ crawl = ZhihuCrawler(50)
 
 
 if __name__ == '__main__':
-    print("hello")
+    print(crawl.get_format_date(1526874368))
+
