@@ -15,5 +15,5 @@ client = ZhihuClient()
 if os.path.isfile(TOKEN_FILE):
     client.load_token(TOKEN_FILE)
 else:
-    client.login_in_terminal()
+    client.login_in_terminal(use_getpass=False)
     client.save_token(TOKEN_FILE)

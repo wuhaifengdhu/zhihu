@@ -23,6 +23,12 @@ class RedisHelper(object):
             user = pickle.loads(self.redis.get(key))
             print(user)
 
+    def get_records_number(self):
+        records_count = 0
+        for item in self.redis.scan_iter(self.user_prefix + "*"):
+            records_count += 1
+        return records_count
+
     def is_user_exist(self, user_id):
         return self.redis.get(self.user_prefix + user_id) is not None
 

@@ -64,6 +64,10 @@ class ZhihuCrawler(object):
         redisHelper.export_all_users()
 
     @staticmethod
+    def get_total_records_number():
+        return redisHelper.get_records_number()
+
+    @staticmethod
     def print_task_queue_size(self):
         print("current queue size: %d" % redisQueue.qsize())
 
