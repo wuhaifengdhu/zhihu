@@ -29,6 +29,4 @@ class TaskQueue(object):
         return len(self.job_queue) == 0
 
 
-
-
 taskQueue = TaskQueue(500)
