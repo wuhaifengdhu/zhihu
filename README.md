@@ -24,4 +24,9 @@ Example: ```pip install zhihu_oauth```
 他的想法的时间list    ===> 找不到        
 
 新增       
-所有的动态时间list      
+所有的动态时间list   
+
+### Release notes on Sep 2, 2018
+1, Change DB from redis to SqliteDB.                
+2, Add new feature, auto save crawled data and waiting crawl queue.            
+3, Function show_total_records_number to get all crawled data.  

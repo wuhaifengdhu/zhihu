@@ -1,13 +1,11 @@
 import sys
-import datetime
-from multiprocessing import Process
-
+import time
+from threading import Thread
 from zhihu_oauth import UnexpectedResponseException
-
+from lib.model.TaskQueue import taskQueue
 from lib.client.Client import client
-from lib.db.RedisHelper import redisHelper
-from lib.db.RedisQueue import redisQueue
-from lib.model.TaskQueue import TaskQueue
+from lib.db.SqliteHelper import sqlite_helper
+from lib.model.SetQueue import waiting_crawl_queue
 from lib.model.User import User
 
 reload(sys)
@@ -15,66 +13,55 @@ sys.setdefaultencoding('UTF8')
 
 
 class ZhihuCrawler(object):
-    def __init__(self, max_thread_number):
-        self.__max_thread_number = max_thread_number
-        self.__process_queue = TaskQueue(self.__max_thread_number)
+    @staticmethod
+    def crawl_task():
+        user_id = waiting_crawl_queue.get()
+        print("Crawl on user id %s, waiting crawl queue size %d, crawled size %d" % (user_id, waiting_crawl_queue.qsize(), sqlite_helper.get_records_number()))
+        if user_id is not None and not sqlite_helper.is_user_exist(user_id):
+            try:
+
+                people = client.people(user_id)
+                user = User(people, sqlite_helper)
+                print(user)
+                sqlite_helper.save_user(user)
+            except UnexpectedResponseException as ex:
+                print("Exception happen when crawl on %s" % user_id)
+        else:
+            print("User(%s) already in DB, avoid duplicate crawl" % user_id)
 
     @staticmethod
-    def __crawl_user_by_id(user_id):
-        print("=" * 100)
-        print("Crawl on user id %s" % user_id)
-        try:
-            people = client.people(user_id)
-            user = User(people)
-            redisHelper.save_user(user)
-        except UnexpectedResponseException as ex:
-            print("Exception happen when crawl on %s" % user_id)
-
-    def __crawl_task(self):
-        print("Start Crawl Task")
-        user_id = redisQueue.get()
-        print("Get user id %s" % user_id)
-        self.__crawl_user_by_id(user_id)
-
-    def run_crawl(self):
-        print("Starting crawl process with queue size %d" % redisQueue.qsize())
-        while not redisQueue.empty():
-            print("start new process! Current task queue size %d" % redisQueue.qsize())
-            process = Process(target=self.__crawl_task)
-            process.daemon = True
-            process.start()
-            self.__process_queue.add_job(process)
-
-    # This function is used to init the database, do not need to run every start time
-    def initialize(self):
-        # Clean all data in data base
-        # redisHelper.clean_all()
-        # Start crawl from two provided users
-        crawl_start_user_list = ["wu-hai-feng-70", "zhang-jia-wei"]
-        for user_id in crawl_start_user_list:
-            self.__crawl_user_by_id(user_id)
-        print("Prepare finished, start with queue size %d" % redisQueue.qsize())
+    def run_crawl():
+        print("Starting run crawl with crawled size %d" % sqlite_helper.get_records_number())
+        print("Starting run crawl with queue size %d" % waiting_crawl_queue.qsize())
+        while not waiting_crawl_queue.empty():
+            ZhihuCrawler.crawl_task()
+            # ZhihuCrawler.crawl_task()
+            # process = Thread(target=ZhihuCrawler.crawl_task)
+            # process.daemon = True
+            # process.start()
+            # taskQueue.add_job(process)
+            # time.sleep(10)
 
     @staticmethod
-    def get_format_date(timestamp):
-        return datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
-
-    @staticmethod
-    def print_all_users():
-        redisHelper.export_all_users()
+    def export_all_users():
+        sqlite_helper.export_all_users()
 
     @staticmethod
     def get_total_records_number():
-        return redisHelper.get_records_number()
+        return sqlite_helper.get_records_number()
 
     @staticmethod
     def print_task_queue_size(self):
-        print("current queue size: %d" % redisQueue.qsize())
+        print("current queue size: %d" % waiting_crawl_queue.qsize())
+
+    @staticmethod
+    def finished():
+        sqlite_helper.close()
 
 
-crawl = ZhihuCrawler(50)
+crawl = ZhihuCrawler()
 
 
 if __name__ == '__main__':
-    print(crawl.get_format_date(1526874368))
+    pass
 

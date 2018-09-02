@@ -1,6 +1,8 @@
+# -*- coding:utf-8 -*-
 import sys
-
-from lib.utils.zhihu_helper import ZhihuCrawler
+import datetime
+from lib.utils.zhihu_helper import crawl
+from lib.client.Client import client
 
 
 reload(sys)
@@ -8,29 +10,35 @@ sys.setdefaultencoding('UTF8')
 
 
 class Main(object):
-    def __init__(self):
-        self.crawler = ZhihuCrawler(50)
+    @staticmethod
+    def verify_client():
+        p = client.people("wu-hai-feng-70")
+        print(p)
 
-    def run_crawl(self):
-        self.crawler.run_crawl()
+    @staticmethod
+    def run_crawl():
+        crawl.run_crawl()
+        crawl.finished()
 
+    @staticmethod
     def show_crawled_data(self):
-        self.crawler.print_all_users()
+        for user in crawl.export_all_users():
+            print(user)
 
-    def run_only_one_time(self):
-        self.crawler.initialize()
+    @staticmethod
+    def print_date(unix_time):
+        print(datetime.datetime.fromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S'))
 
-    def print_date(self, unix_time):
-        print(self.crawler.get_format_date(unix_time))
-
-    def show_total_records_number(self):
-        print("Total records crawled: %d" % self.crawler.get_total_records_number())
+    @staticmethod
+    def show_total_records_number():
+        print("Total records crawled: %d" % crawl.get_total_records_number())
 
 
 if __name__ == '__main__':
-    main = Main()
-    # main.run_crawl()
-    main.show_total_records_number()
-    # main.show_crawled_data()
+    Main.verify_client()
+    Main.run_crawl()
+    Main.show_total_records_number()
+    Main.show_crawled_data()
+
 
 

@@ -1,6 +1,6 @@
+# -*- coding:utf-8 -*-
 import sys
 from Question import Question
-from lib.db.RedisHelper import redisHelper
 
 
 reload(sys)
@@ -8,7 +8,7 @@ sys.setdefaultencoding('UTF8')
 
 
 class User(object):
-    def __init__(self, people):
+    def __init__(self, people, sqlite_helper):
         self.max_count = 50
         self.user_id = people.id
         print(self.user_id)
@@ -18,7 +18,7 @@ class User(object):
         print(self.answer_time_list)
         self.article_time_list = self.get_article_time_list(people)
         print(self.article_time_list)
-        self.crawl_comment_data(people)
+        self.crawl_comment_data(people, sqlite_helper)
         print("finish crawl comment data")
         self.favorite_column_list = self.get_favorite_column_list(people)
         for column in self.favorite_column_list:
@@ -60,30 +60,30 @@ class User(object):
                 break
         return list(time_set)
 
-    def crawl_comment_data(self, people):
+    def crawl_comment_data(self, people, sqlite_helper):
         print("question count: %d" % people.question_count)
         count = 0
         for question in people.questions:
-            Question.handle(question)
+            Question.handle(question, sqlite_helper)
             count += 1
             if count > self.max_count:
                 break
         print("answer count: %d" % people.answer_count)
         count = 0
         for answer in people.answers:
-            Question.handle_answer(answer)
+            Question.handle_answer(answer, sqlite_helper)
             count += 1
             if count > self.max_count:
                 break
 
-    def get_comment_time_list(self):
-        return redisHelper.get_user_comment(self.user_id)
+    def get_comment_time_list(self, sqlite_helper):
+        return sqlite_helper.get_user_comment(self.user_id)
 
     def get_favorite_column_list(self, people):
         column_list = []
         count = 0
-        for favoriate_column in people.following_columns:
-            column_list.append(favoriate_column.title)
+        for favorite_column in people.following_columns:
+            column_list.append(favorite_column.title)
             count += 1
             if count > self.max_count:
                 break
@@ -92,8 +92,8 @@ class User(object):
     def get_favorite_topic_list(self, people):
         topic_list = []
         count = 0
-        for favoriate_topic in people.following_topics:
-            topic_list.append(favoriate_topic.name)
+        for favorite_topic in people.following_topics:
+            topic_list.append(favorite_topic.name)
             count += 1
             if count > self.max_count:
                 break
