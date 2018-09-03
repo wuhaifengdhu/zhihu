@@ -154,6 +154,19 @@ class User(object):
                 break
         return time_list
 
+    def to_list(self, sqlite_helper):
+        return [str(self.user_id), str(self.user_name), str(self.answer_time_list), str(self.article_time_list),
+                str(self.get_comment_time_list(sqlite_helper)), str(self.favorite_column_list),
+                str(self.favorite_topic_list), str(self.question_time_list), str(self.favorite_user_id_list),
+                str(self.follower_user_id_list), str(self.live_time_list), str(self.thought_time_list),
+                str(self.activity_time_list)]
+
+    @staticmethod
+    def get_fields():
+        return ["user_id", "user_name", "answer_time_list", "article_time_list", "comment_time_list",
+                "favorite_column_list", "favorite_topic_list", "question_time_list", "favorite_user_id_list",
+                "follower_user_id_list", "live_time_list", "thought_time_list", "activity_time_list"]
+
     def __str__(self):
         return "user_id = %s, user_name = %s, answer_time_list = %s, article_time_list = %s, favorite_column_list = " \
                "%s, favorite_topic_list = %s, question_time_list = %s, favorite_user_id_list = %s, " \

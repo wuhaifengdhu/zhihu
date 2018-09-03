@@ -1,8 +1,5 @@
 import sys
-import time
-from threading import Thread
 from zhihu_oauth import UnexpectedResponseException
-from lib.model.TaskQueue import taskQueue
 from lib.client.Client import client
 from lib.db.SqliteHelper import sqlite_helper
 from lib.model.SetQueue import waiting_crawl_queue
@@ -22,7 +19,6 @@ class ZhihuCrawler(object):
 
                 people = client.people(user_id)
                 user = User(people, sqlite_helper)
-                print(user)
                 sqlite_helper.save_user(user)
             except UnexpectedResponseException as ex:
                 print("Exception happen when crawl on %s" % user_id)

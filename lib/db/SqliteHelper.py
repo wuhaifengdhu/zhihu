@@ -51,7 +51,7 @@ class SqliteHelper(object):
         if users:
             return [pickle.loads(user[0].user_data) for user in users]
         else:
-            return None
+            return []
 
     def get_records_number(self):
         self.__cursor.execute("SELECT COUNT(*) from table_users")

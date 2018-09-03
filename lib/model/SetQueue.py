@@ -6,7 +6,7 @@ from Queue import Queue
 class SetQueue(object):
     def __init__(self, auto_save_size=1000):
         self.__store_filename = "waiting_crawl.dat"
-        self.__default_set = {"wu-hai-feng-70", "zhang-jia-wei"}
+        self.__default_set = {"zhang-jia-wei"}
         self.full_set = StoreHelper.load_data(self.__store_filename, self.__default_set)
         print("Waiting crawl list when start: %d" % self.qsize())
         self.__add_count = 0
