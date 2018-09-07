@@ -27,14 +27,13 @@ class Main(object):
         crawl.finished()
 
     @staticmethod
-    def show_crawled_data():
-        out_put_csv = "crawled_data.csv"
+    def export_csv_file(output_file_name):
         user_data = []
         for user in crawl.export_all_users():
             user_str_list = user.to_list(sqlite_helper)
             print(user_str_list)
             user_data.append(user_str_list)
-        CsvHelper.write_list_to_csv(out_put_csv, User.get_fields(), user_data)
+        CsvHelper.write_list_to_csv(output_file_name, User.get_fields(), user_data)
 
     @staticmethod
     def print_date(unix_time):
@@ -47,9 +46,9 @@ class Main(object):
 
 if __name__ == '__main__':
     Main.verify_client()
-    Main.run_crawl()
-    # Main.show_total_records_number()
-    # Main.show_crawled_data()
+    # Main.run_crawl()
+    Main.show_total_records_number()
+    Main.export_csv_file("crawled_data.csv")
     sqlite_helper.close()
 
 

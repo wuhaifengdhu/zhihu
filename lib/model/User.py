@@ -3,13 +3,9 @@ import sys
 from Question import Question
 
 
-reload(sys)
-sys.setdefaultencoding('UTF8')
-
-
 class User(object):
     def __init__(self, people, sqlite_helper):
-        self.max_count = 50
+        self.max_count = 10
         self.user_id = people.id
         print(self.user_id)
         self.user_name = people.name
@@ -155,11 +151,11 @@ class User(object):
         return time_list
 
     def to_list(self, sqlite_helper):
-        return [str(self.user_id), str(self.user_name), str(self.answer_time_list), str(self.article_time_list),
-                str(self.get_comment_time_list(sqlite_helper)), str(self.favorite_column_list),
-                str(self.favorite_topic_list), str(self.question_time_list), str(self.favorite_user_id_list),
-                str(self.follower_user_id_list), str(self.live_time_list), str(self.thought_time_list),
-                str(self.activity_time_list)]
+        return [self.user_id, self.user_name, ",".join(str(x) for x in self.answer_time_list), ",".join(str(x) for x in self.article_time_list),
+                ",".join(str(x) for x in self.get_comment_time_list(sqlite_helper)), ",".join(str(x) for x in self.favorite_column_list),
+                ",".join(str(x) for x in self.favorite_topic_list), ",".join(str(x) for x in self.question_time_list), ",".join(str(x) for x in self.favorite_user_id_list),
+                ",".join(str(x) for x in self.follower_user_id_list), ",".join(str(x) for x in self.live_time_list), ",".join(str(x) for x in self.thought_time_list),
+                ",".join(str(x) for x in self.activity_time_list)]
 
     @staticmethod
     def get_fields():

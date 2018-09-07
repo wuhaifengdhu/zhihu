@@ -40,7 +40,7 @@ class ZhihuCrawler(object):
 
     @staticmethod
     def export_all_users():
-        sqlite_helper.export_all_users()
+        return sqlite_helper.export_all_users()
 
     @staticmethod
     def get_total_records_number():
