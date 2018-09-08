@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
-import sys
 from Question import Question
+import datetime
 
 
 class User(object):
@@ -150,12 +150,22 @@ class User(object):
                 break
         return time_list
 
+    @staticmethod
+    def print_date(unix_time):
+        return datetime.datetime.fromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S')
+
     def to_list(self, sqlite_helper):
-        return [self.user_id, self.user_name, ",".join(str(x) for x in self.answer_time_list), ",".join(str(x) for x in self.article_time_list),
-                ",".join(str(x) for x in self.get_comment_time_list(sqlite_helper)), ",".join(str(x) for x in self.favorite_column_list),
-                ",".join(str(x) for x in self.favorite_topic_list), ",".join(str(x) for x in self.question_time_list), ",".join(str(x) for x in self.favorite_user_id_list),
-                ",".join(str(x) for x in self.follower_user_id_list), ",".join(str(x) for x in self.live_time_list), ",".join(str(x) for x in self.thought_time_list),
-                ",".join(str(x) for x in self.activity_time_list)]
+        return [self.user_id, self.user_name, ",".join(User.print_date(x) for x in self.answer_time_list),
+                ",".join(User.print_date(x) for x in self.article_time_list),
+                ",".join(User.print_date(x) for x in self.get_comment_time_list(sqlite_helper)),
+                ",".join(str(x) for x in self.favorite_column_list),
+                ",".join(str(x) for x in self.favorite_topic_list),
+                ",".join(User.print_date(x) for x in self.question_time_list),
+                ",".join(str(x) for x in self.favorite_user_id_list),
+                ",".join(str(x) for x in self.follower_user_id_list),
+                ",".join(User.print_date(x) for x in self.live_time_list),
+                ",".join(User.print_date(x) for x in self.thought_time_list),
+                ",".join(User.print_date(x) for x in self.activity_time_list)]
 
     @staticmethod
     def get_fields():

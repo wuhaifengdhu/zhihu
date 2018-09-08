@@ -36,10 +36,6 @@ class Main(object):
         CsvHelper.write_list_to_csv(output_file_name, User.get_fields(), user_data)
 
     @staticmethod
-    def print_date(unix_time):
-        print(datetime.datetime.fromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S'))
-
-    @staticmethod
     def show_total_records_number():
         print("Total records crawled: %d" % crawl.get_total_records_number())
 
